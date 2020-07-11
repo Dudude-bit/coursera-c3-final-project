@@ -10,46 +10,54 @@ import requests
 from ..settings import SMART_HOME_API_URL, SMART_HOME_ACCESS_TOKEN
 
 
-class ControllerView(FormView):
+class ControllerView(FormView) :
     form_class = ControllerForm
     template_name = 'core/control.html'
     success_url = reverse_lazy('form')
+    TOKEN = SMART_HOME_ACCESS_TOKEN
 
-    def get_context_data(self, **kwargs):
+    def get(self, request, *args, **kwargs):
+        TOKEN = SMART_HOME_ACCESS_TOKEN
         try:
-            TOKEN = SMART_HOME_ACCESS_TOKEN
-            requests.get(SMART_HOME_API_URL, headers={'Authorization' : f'Bearer {TOKEN}'})
+            requests.get('https://smarthome.webpython.graders.eldf.ru/api/user.controller',
+                         headers={'Authorization' : f'Bearer {TOKEN}'}).json()['data']
         except requests.exceptions.ConnectionError:
             return HttpResponse(status=502)
+        return super(ControllerView, self).get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs) :
         context = super(ControllerView, self).get_context_data()
         data = Setting.objects.all()
-        context['data'] = {v.controller_name: v.value for v in data}
+        context['data'] = {v.controller_name : v.value for v in data}
         return context
 
-    def get_initial(self):
-        try:
+    def get_initial(self) :
+        try :
             bedroom_temperature = Setting.objects.get(controller_name='bedroom_temperature').value
             bathroom_temperature = Setting.objects.get(controller_name='hot_water_temperature').value
-        except Setting.DoesNotExist:
-            bedroom_temperature = 21
-            bathroom_temperature = 80
-        return {'bedroom_target_temperature': bedroom_temperature,
-                'hot_water_target_temperature': bathroom_temperature}
+        except Setting.DoesNotExist :
+            bedroom_temperature = Setting.objects.create(controller_name='bedroom_temperature',
+                                                         label='bedroom_target_temperature').value
+            bathroom_temperature = Setting.objects.create(controller_name='hot_water_temperature',
+                                                          label='hot_water_target_temperature').value
+        return {'bedroom_target_temperature' : bedroom_temperature,
+                'hot_water_target_temperature' : bathroom_temperature}
 
-    def form_valid(self, form):
+    def form_valid(self, form) :
         bedroom_temperature = self.request.POST.get('bedroom_target_temperature')
         hot_water = self.request.POST.get('hot_water_target_temperature')
         bedroom_light = self.request.POST.get('bedroom_light')
         bathroom_light = self.request.POST.get('bathroom_light')
-        Setting.objects.update_or_create(defaults={'value':
-                                                   bedroom_temperature}, controller_name='bedroom_temperature', label='bedroom_target_temperature')
+        Setting.objects.update_or_create(defaults={'value' :
+                                                       bedroom_temperature}, controller_name='bedroom_temperature',
+                                         label='bedroom_target_temperature')
         Setting.objects.update_or_create(defaults={
-            'value': hot_water
+            'value' : hot_water
         }, controller_name='hot_water_temperature', label='hot_water_target_temperature')
         Setting.objects.update_or_create(defaults={
-            'value': 1 if bedroom_light == 'on' else 0
+            'value' : 1 if bedroom_light == 'on' else 0
         }, controller_name='bedroom_light', label='bedroom_light')
         Setting.objects.update_or_create(defaults={
-            'value': 1 if bathroom_light == 'on' else 0
+            'value' : 1 if bathroom_light == 'on' else 0
         }, controller_name='bathroom_light', label='bathroom_light')
         return super(ControllerView, self).form_valid(form)

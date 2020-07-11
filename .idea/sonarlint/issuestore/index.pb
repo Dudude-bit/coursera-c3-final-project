@@ -39,3 +39,10 @@ G
 	setup.cfg,8\c\8c91c0296909b5ea3c496fde69e9dc44a6c6ae5f
 i
 9coursera_house/core/migrations/0003_auto_20180527_0829.py,6\5\6515af67fc43c4eeb928c94f55ba582a5f39efc1
+K
+coursera_house/core/apps.py,b\7\b727f85c5168188cc0a8b9cbdcfe5ce61c4ac080
+J
+coursera_house/__init__.py,2\b\2ba47b97a71e8afa934ba59513e014079052f361
+:
+
+.gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302
