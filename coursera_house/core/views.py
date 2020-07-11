@@ -34,6 +34,7 @@ class ControllerView(FormView) :
                 return HttpResponse(status=502)
             else :
                 hotwater_temperature = request.POST.get('hot_water_target_temperature')
+                bedroom_target_temperature = request.POST.get('bedroom_target_temperature')
                 data = data['data']
                 temp_dict = {}
                 for value in data :
@@ -50,6 +51,20 @@ class ControllerView(FormView) :
                         'name' : 'boiler',
                         'value' : False
                     })
+                if temp_dict['bedroom_temperature'] > bedroom_target_temperature * 1.1 and not (
+                temp_dict['smoke_detector']) :
+                    request['controllers'].append({
+                        'name': 'air_conditioner ',
+                        'value': True
+                    })
+                elif temp_dict['bedroom_temperature'] < bedroom_target_temperature * 0.9:
+                    request['controllers'].append({
+                        'name' : 'air_conditioner ',
+                        'value' : False
+                    })
+                if temp_dict['controllers'] != 0:
+                    requests.post('https://smarthome.webpython.graders.eldf.ru/api/user.controller', json=request,
+                                  headers={'Authorization' : f'Bearer {TOKEN}'})
         except requests.exceptions.ConnectionError :
             return HttpResponse(status=502)
         return super(ControllerView, self).post(request, *args, **kwargs)
