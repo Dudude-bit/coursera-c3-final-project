@@ -16,28 +16,41 @@ class ControllerView(FormView) :
     success_url = reverse_lazy('form')
     TOKEN = SMART_HOME_ACCESS_TOKEN
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) :
         TOKEN = SMART_HOME_ACCESS_TOKEN
-        try:
+        try :
             requests.get('https://smarthome.webpython.graders.eldf.ru/api/user.controller',
                          headers={'Authorization' : f'Bearer {TOKEN}'}).json()['data']
-        except requests.exceptions.ConnectionError:
+        except requests.exceptions.ConnectionError :
             return HttpResponse(status=502)
         return super(ControllerView, self).get(request, *args, **kwargs)
-    
-    def post(self, request, *args, **kwargs):
+
+    def post(self, request, *args, **kwargs) :
         TOKEN = SMART_HOME_ACCESS_TOKEN
-        try:
+        try :
             data = requests.get('https://smarthome.webpython.graders.eldf.ru/api/user.controller',
-                         headers={'Authorization' : f'Bearer {TOKEN}'}).json()
-            if data['status'] != 'ok':
+                                headers={'Authorization' : f'Bearer {TOKEN}'}).json()
+            if data['status'] != 'ok' :
                 return HttpResponse(status=502)
-            else:
+            else :
+                hotwater_temperature = request.POST.get('hot_water_target_temperature')
                 data = data['data']
                 temp_dict = {}
                 for value in data :
                     temp_dict[value['name']] = value['value']
-        except requests.exceptions.ConnectionError:
+                if temp_dict['boiler_temperature'] and 0.9 * int(
+                        temp_dict['boiler_temperature']) < hotwater_temperature and not (temp_dict['cold_water']) :
+                    request['controllers'].append({
+                        'name' : 'boiler',
+                        'value' : True
+                    })
+                elif temp_dict['boiler_temperature'] and 1.1 * int(
+                        temp_dict['boiler_temperature']) > hotwater_temperature :
+                    request['controllers'].append({
+                        'name' : 'boiler',
+                        'value' : False
+                    })
+        except requests.exceptions.ConnectionError :
             return HttpResponse(status=502)
         return super(ControllerView, self).post(request, *args, **kwargs)
 
