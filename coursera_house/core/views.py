@@ -24,6 +24,15 @@ class ControllerView(FormView) :
         except requests.exceptions.ConnectionError:
             return HttpResponse(status=502)
         return super(ControllerView, self).get(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        TOKEN = SMART_HOME_ACCESS_TOKEN
+        try:
+            requests.get('https://smarthome.webpython.graders.eldf.ru/api/user.controller',
+                         headers={'Authorization' : f'Bearer {TOKEN}'}).json()['data']
+        except requests.exceptions.ConnectionError:
+            return HttpResponse(status=502)
+        return super(ControllerView, self).post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs) :
         context = super(ControllerView, self).get_context_data()
