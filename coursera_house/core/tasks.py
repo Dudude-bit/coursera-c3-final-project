@@ -23,26 +23,6 @@ def smart_home_manager() :
         hotwater_temperature = Setting.objects.get(controller_name='hot_water_temperature').value
         bedroom_light = Setting.objects.get(controller_name='bedroom_light').value
         bathroom_light = Setting.objects.get(controller_name='bathroom_light').value
-        request = {
-            'controllers' : [
-                {
-                    'name' : 'cold_water',
-                    'value' : False
-                },
-                {
-                    'name' : 'hot_water',
-                    'value' : False
-                },
-                {
-                    'name' : 'washing_machine',
-                    'value' : 'off'
-                },
-                {
-                    'name' : 'boiler',
-                    'value' : False
-                }
-            ]
-        }
         requests.post('https://smarthome.webpython.graders.eldf.ru/api/user.controller', json=request,
                       headers={'Authorization' : f'Bearer {TOKEN}'})
         if temp_dict['leak_detector'] :
