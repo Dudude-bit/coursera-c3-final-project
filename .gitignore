@@ -4,3 +4,5 @@ celerybeat-schedule.dir
 celerybeat.pid
 db.sqlite3
 .pytest_cache/
+.idea/
+__pycache__/
