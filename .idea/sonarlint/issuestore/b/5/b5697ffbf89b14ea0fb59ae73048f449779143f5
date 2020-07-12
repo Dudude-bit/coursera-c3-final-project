@@ -1,4 +1,5 @@
 
-Upython:S1481"7Remove the unused local variable "bedroom_temperature".(×éÎh8¤¼²¦³.
-Ppython:S1481"1Remove the unused local variable "bedroom_light".(‰ğëÖ8¤¼²¦³.
-Vpython:S1481"2Remove the unused local variable "bathroom_light".(‘û‹éıÿÿÿÿ8¤¼²¦³.
+xpython:S3776	"TRefactor this function to reduce its Cognitive Complexity from 16 to the 15 allowed.(¦Œ®ûÿÿÿÿ8¬Šíü³.
+Upython:S1481"7Remove the unused local variable "bedroom_temperature".(×éÎh8¤¼²¦³.
+Ppython:S1481"1Remove the unused local variable "bedroom_light".(‰ğëÖ8¤¼²¦³.
+Vpython:S1481"2Remove the unused local variable "bathroom_light".(‘û‹éıÿÿÿÿ8¤¼²¦³.

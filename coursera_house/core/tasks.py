@@ -22,55 +22,7 @@ def smart_home_manager() :
             hotwater_temperature = Setting.objects.get(controller_name='hot_water_temperature').value
             bedroom_light = Setting.objects.get(controller_name='bedroom_light').value
             bathroom_light = Setting.objects.get(controller_name='bathroom_light').value
-            if temp_dict['leak_detector'] :
-                request['controllers'].append({
-                    'name' : 'cold_water',
-                    'value' : False
-                })
-                request['controllers'].append({
-                    'name' : 'hot_water',
-                    'value' : False
-                })
-                request['controllers'].append({
-                    'name' : 'boiler',
-                    'value' : False
-                })
-                request['controllers'].append({
-                    'name' : 'washing_machine',
-                    'value' : 'off'
-                })
-            elif temp_dict['cold_water'] == False :
-                request['controllers'].append({
-                    'name' : 'boiler',
-                    'value' : False
-                })
-                request['controllers'].append({
-                    'name' : 'washing_machine',
-                    'value' : 'off'
-                })
-            elif temp_dict['boiler_temperature'] and 0.9 * int(
-                    temp_dict['boiler_temperature']) < hotwater_temperature and not (temp_dict['cold_water']) :
-                request['controllers'].append({
-                    'name' : 'boiler',
-                    'value' : True
-                })
-            elif temp_dict['boiler_temperature'] and 1.1 * int(temp_dict['boiler_temperature']) > hotwater_temperature :
-                request['controllers'].append({
-                    'name' : 'boiler',
-                    'value' : False
-                })
-            elif int(temp_dict['outdoor_light'] < 50) and not (temp_dict['curtains'] == 'slightly_open') and not (
-                    temp_dict['bedroom_light']) :
-                request['controllers'].append({
-                    'name' : 'curtains',
-                    'value' : 'open'
-                })
-            elif (int(temp_dict['outdoor_light'] > 50) or temp_dict[
-                'bedroom_light']) and not (temp_dict['curtains'] == 'slightly_open') :
-                request['controllers'].append({
-                    'name' : 'curtains',
-                    'value' : 'open'
-                })
+
             requests.post('https://smarthome.webpython.graders.eldf.ru/api/user.controller', json=request,
                           headers={'Authorization' : f'Bearer {TOKEN}'})
     except requests.exceptions.ConnectionError:
